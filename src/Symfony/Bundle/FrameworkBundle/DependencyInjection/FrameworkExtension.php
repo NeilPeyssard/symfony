@@ -52,6 +52,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\DataCollector\CommandDataCollector;
 use Symfony\Component\Console\Debug\CliRequest;
 use Symfony\Component\Console\Messenger\RunCommandMessageHandler;
+use Symfony\Component\Console\Plugin\CommandPluginInterface;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -585,6 +586,8 @@ class FrameworkExtension extends Extension
             ->addTag('asset_mapper.compiler');
         $container->registerForAutoconfiguration(Command::class)
             ->addTag('console.command');
+        $container->registerForAutoconfiguration(CommandPluginInterface::class)
+            ->addTag('console.plugin');
         $container->registerForAutoconfiguration(ResourceCheckerInterface::class)
             ->addTag('config_cache.resource_checker');
         $container->registerForAutoconfiguration(EnvVarLoaderInterface::class)

@@ -127,6 +127,7 @@ class ReStructuredTextDescriptor extends Descriptor
         }
 
         $command->mergeApplicationDefinition(false);
+        $command->mergePluginDefinition();
 
         foreach ($command->getAliases() as $alias) {
             $this->write('.. _'.$alias.":\n\n");

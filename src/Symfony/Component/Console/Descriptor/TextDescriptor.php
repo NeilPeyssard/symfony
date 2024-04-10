@@ -125,6 +125,7 @@ class TextDescriptor extends Descriptor
     protected function describeCommand(Command $command, array $options = []): void
     {
         $command->mergeApplicationDefinition(false);
+        $command->mergePluginDefinition();
 
         if ($description = $command->getDescription()) {
             $this->writeText('<comment>Description:</comment>', $options);

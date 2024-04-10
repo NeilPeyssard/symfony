@@ -192,6 +192,14 @@ final class TraceableCommand extends Command implements SignalableCommandInterfa
         $this->command->mergeApplicationDefinition($mergeArgs);
     }
 
+    /**
+     * @internal
+     */
+    public function mergePluginDefinition(): void
+    {
+        $this->command->mergePluginDefinition();
+    }
+
     public function setDefinition(array|InputDefinition $definition): static
     {
         $this->command->setDefinition($definition);

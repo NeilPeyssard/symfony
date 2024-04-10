@@ -26,6 +26,7 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Plugin\CommandPluginInterface;
 
 /**
  * Base class for all commands.
@@ -53,6 +54,7 @@ class Command
     private array $synopsis = [];
     private array $usages = [];
     private ?HelperSet $helperSet = null;
+    private array $plugins = [];
 
     public static function getDefaultName(): ?string
     {
@@ -136,6 +138,30 @@ class Command
     public function getHelperSet(): ?HelperSet
     {
         return $this->helperSet;
+    }
+
+    /**
+     * Sets the console plugins
+     */
+    public function setPlugins(array $plugins): void
+    {
+        $this->plugins = $plugins;
+    }
+
+    /**
+     * Add a command plugins
+     */
+    public function addPlugin(CommandPluginInterface $plugin): void
+    {
+        $this->plugins[] = $plugin;
+    }
+
+    /**
+     * Get the console plugins
+     */
+    public function getPlugins(): array
+    {
+        return $this->plugins;
     }
 
     /**
@@ -232,6 +258,8 @@ class Command
     {
         // add the application arguments and options
         $this->mergeApplicationDefinition();
+        // add the plugins arguments and options
+        $this->mergePluginDefinition();
 
         // bind the input against the command specific arguments/options
         try {
@@ -260,6 +288,10 @@ class Command
             }
         }
 
+        foreach ($this->plugins as $plugin) {
+            $plugin->executeBeforeCommand($input, $output);
+        }
+
         if ($input->isInteractive()) {
             $this->interact($input, $output);
         }
@@ -277,6 +309,10 @@ class Command
             $statusCode = ($this->code)($input, $output);
         } else {
             $statusCode = $this->execute($input, $output);
+        }
+
+        foreach ($this->plugins as $plugin) {
+            $plugin->executeAfterCommand($input, $output);
         }
 
         return is_numeric($statusCode) ? (int) $statusCode : 0;
@@ -360,6 +396,41 @@ class Command
     }
 
     /**
+     * Merges the plugins definitions with the command definition.
+     *
+     * @param bool $mergeArgs Whether to merge or not the plugins definitions arguments to Command definition arguments
+     *
+     * @internal
+     */
+    public function mergePluginDefinition(): void
+    {
+        if (null === $this->fullDefinition) {
+            $this->fullDefinition = new InputDefinition();
+            $this->fullDefinition->setOptions($this->definition->getOptions());
+            $this->fullDefinition->setArguments($this->definition->getArguments());
+        }
+
+        foreach ($this->plugins as $plugin) {
+            $pluginDefinition = $plugin->getDefinition();
+            if (null === $pluginDefinition) {
+                continue;
+            }
+
+            foreach ($pluginDefinition->getOptions() as $option) {
+                if (!$this->fullDefinition->hasOption($option->getName())) {
+                    $this->fullDefinition->addOption($option);
+                }
+            }
+
+            foreach ($pluginDefinition->getArguments() as $argument) {
+                if (!$this->fullDefinition->hasArgument($argument->getName())) {
+                    $this->fullDefinition->addArgument($argument);
+                }
+            }
+        }
+    }
+
+    /**
      * Sets an array of argument and option instances.
      *
      * @return $this
@@ -389,7 +460,7 @@ class Command
      * Gets the InputDefinition to be used to create representations of this Command.
      *
      * Can be overridden to provide the original command representation when it would otherwise
-     * be changed by merging with the application InputDefinition.
+     * be changed by merging with the application and/or plugins InputDefinition.
      *
      * This method is not part of public API and should not be used directly.
      */

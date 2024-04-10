@@ -100,6 +100,8 @@ class ApplicationTest extends TestCase
         require_once self::$fixturesPath.'/TestAmbiguousCommandRegistering2.php';
         require_once self::$fixturesPath.'/FooHiddenCommand.php';
         require_once self::$fixturesPath.'/BarHiddenCommand.php';
+        require_once self::$fixturesPath.'/WithPluginCommand.php';
+        require_once self::$fixturesPath.'/Plugin/FooPlugin.php';
     }
 
     protected function normalizeLineBreaks($text)
@@ -2224,6 +2226,24 @@ class ApplicationTest extends TestCase
         shell_exec('stty '.$previousSttyMode);
 
         $this->assertSame($previousSttyMode, $sttyMode);
+    }
+
+    public function testApplicationMergePluginDefinition()
+    {
+        $application = new Application();
+        $application->setAutoExit(false);
+        $application->setDispatcher(new EventDispatcher());
+
+        $command = new \WithPluginCommand();
+        $command->addPlugin(new \FooPlugin());
+
+        $tester = new ApplicationTester($application);
+        $application->add($command);
+        $this->assertSame(0, $tester->run(['plugin:command', '--say-hello' => true, '--say-goodbye' => true]));
+        $display = $tester->getDisplay(true);
+
+        $this->assertStringContainsString('Hello !', $display);
+        $this->assertStringContainsString('Goodbye !', $display);
     }
 
     private function createSignalableApplication(Command $command, ?EventDispatcherInterface $dispatcher): Application

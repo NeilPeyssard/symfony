@@ -151,6 +151,7 @@ class JsonDescriptor extends Descriptor
             ];
         } else {
             $command->mergeApplicationDefinition(false);
+            $command->mergePluginDefinition();
 
             $data += [
                 'usage' => array_merge([$command->getSynopsis()], $command->getUsages(), $command->getAliases()),

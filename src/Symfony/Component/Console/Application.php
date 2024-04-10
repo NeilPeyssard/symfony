@@ -1032,6 +1032,7 @@ class Application implements ResetInterface
         // bind before the console.command event, so the listeners have access to input options/arguments
         try {
             $command->mergeApplicationDefinition();
+            $command->mergePluginDefinition();
             $input->bind($command->getDefinition());
         } catch (ExceptionInterface) {
             // ignore invalid options/arguments for now, to allow the event listeners to customize the InputDefinition

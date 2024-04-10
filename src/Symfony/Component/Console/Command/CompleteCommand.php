@@ -120,6 +120,7 @@ final class CompleteCommand extends Command
                 $suggestions->suggestValues(array_filter(array_merge([$command->getName()], $command->getAliases())));
             } else {
                 $command->mergeApplicationDefinition();
+                $command->mergePluginDefinition();
                 $completionInput->bind($command->getDefinition());
 
                 if (CompletionInput::TYPE_OPTION_NAME === $completionInput->getCompletionType()) {

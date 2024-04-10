@@ -113,6 +113,7 @@ class MarkdownDescriptor extends Descriptor
         }
 
         $command->mergeApplicationDefinition(false);
+        $command->mergePluginDefinition();
 
         $this->write(
             '`'.$command->getName()."`\n"

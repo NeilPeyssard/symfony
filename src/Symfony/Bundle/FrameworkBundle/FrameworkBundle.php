@@ -33,6 +33,7 @@ use Symfony\Component\Cache\DependencyInjection\CachePoolPrunerPass;
 use Symfony\Component\Config\Resource\ClassExistenceResource;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
+use Symfony\Component\Console\DependencyInjection\AddConsolePluginPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\Compiler\RegisterReverseContainerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -141,6 +142,7 @@ class FrameworkBundle extends Bundle
         $this->addCompilerPassIfExists($container, AddConstraintValidatorsPass::class);
         $this->addCompilerPassIfExists($container, AddValidatorInitializersPass::class);
         $this->addCompilerPassIfExists($container, AddConsoleCommandPass::class, PassConfig::TYPE_BEFORE_REMOVING);
+        $this->addCompilerPassIfExists($container, AddConsolePluginPass::class, PassConfig::TYPE_BEFORE_REMOVING);
         // must be registered as late as possible to get access to all Twig paths registered in
         // twig.template_iterator definition
         $this->addCompilerPassIfExists($container, TranslatorPass::class, PassConfig::TYPE_BEFORE_OPTIMIZATION, -32);

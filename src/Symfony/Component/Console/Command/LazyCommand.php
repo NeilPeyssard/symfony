@@ -97,6 +97,14 @@ final class LazyCommand extends Command
         $this->getCommand()->mergeApplicationDefinition($mergeArgs);
     }
 
+    /**
+     * @internal
+     */
+    public function mergePluginDefinition(): void
+    {
+        $this->getCommand()->mergePluginDefinition();
+    }
+
     public function setDefinition(array|InputDefinition $definition): static
     {
         $this->getCommand()->setDefinition($definition);

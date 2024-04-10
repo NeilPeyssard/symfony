@@ -5,6 +5,7 @@ CHANGELOG
 ---
 
  * Add `ArgvInput::getRawTokens()`
+ * Add `ConsolePluginInterface` for customizing commands behavior
 
 7.0
 ---

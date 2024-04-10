@@ -64,6 +64,7 @@ class XmlDescriptor extends Descriptor
             }
         } else {
             $command->mergeApplicationDefinition(false);
+            $command->mergePluginDefinition();
 
             foreach (array_merge([$command->getSynopsis()], $command->getAliases(), $command->getUsages()) as $usage) {
                 $usagesXML->appendChild($dom->createElement('usage', $usage));
